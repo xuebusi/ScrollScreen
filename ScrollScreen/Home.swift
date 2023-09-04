@@ -13,7 +13,7 @@ struct RecInfo: Identifiable, Hashable {
 }
 
 struct Home: View {
-    @State var index: Int = 0
+    @State var currentIndex: Int = 0
     
     let recInfos: [RecInfo] = [
         RecInfo(color: .red),
@@ -48,51 +48,70 @@ struct Home: View {
                         .onAppear {
                             scroll.scrollTo(recInfos.first?.id, anchor: .bottom)
                         }
-                        .onChange(of: recInfos) { newValue in
-                            scroll.scrollTo(newValue.description, anchor: .bottom)
-                        }
                     }
                 }
                 .overlay(
                     VStack(spacing: 40) {
                         // top
                         ScrollButton(action: {
-                            self.index = 0
                             withAnimation {
-                                scroll.scrollTo(recInfos.first?.id)
+                                self.currentIndex = 0
+                                scroll.scrollTo(recInfos[self.currentIndex].id)
                             }
                         }, imageName: "arrow.up.to.line.circle")
                         
                         // prev
                         ScrollButton(action: {
-                            if self.index != 0 {
-                                self.index -= 1
-                            }
                             withAnimation {
-                                scroll.scrollTo(recInfos[self.index].id)
+                                if self.currentIndex != 0 {
+                                    self.currentIndex -= 1
+                                }
+                                scroll.scrollTo(recInfos[self.currentIndex].id)
                             }
                         }, imageName: "arrow.up.circle")
                         
                         // next
                         ScrollButton(action: {
-                            if self.index != recInfos.count - 1 {
-                                self.index += 1
-                            }
                             withAnimation {
-                                scroll.scrollTo(recInfos[self.index].id)
+                                if self.currentIndex != recInfos.count - 1 {
+                                    self.currentIndex += 1
+                                }
+                                scroll.scrollTo(recInfos[self.currentIndex].id)
                             }
                         }, imageName: "arrow.down.circle")
                         
                         // bottom
                         ScrollButton(action: {
-                            self.index = recInfos.count - 1
                             withAnimation {
-                                scroll.scrollTo(recInfos.last?.id)
+                                self.currentIndex = recInfos.count - 1
+                                scroll.scrollTo(recInfos[self.currentIndex].id)
                             }
                         }, imageName: "arrow.down.to.line.circle")
                     }
                         .padding(.trailing, 20)
                     , alignment: .trailing
+                )
+                .overlay(
+                    VStack(alignment: .leading, spacing: 20) {
+                        ForEach(recInfos.indices, id: \.self) { index in
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(recInfos[index].color)
+                                .frame(width: 50, height: 50)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(.white, lineWidth: 5)
+                                )
+                                .scaleEffect(index == self.currentIndex ? 1.2 : 1)
+                                .onTapGesture {
+                                    withAnimation {
+                                        self.currentIndex = index
+                                        scroll.scrollTo(recInfos[index].id, anchor: .bottom)
+                                    }
+                                }
+                        }
+                    }
+                        .padding()
+                    , alignment: .leading
                 )
             }
         }
