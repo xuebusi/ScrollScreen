@@ -94,14 +94,14 @@ struct Home: View {
                 .overlay(
                     VStack(alignment: .leading, spacing: 20) {
                         ForEach(recInfos.indices, id: \.self) { index in
-                            RoundedRectangle(cornerRadius: 10)
+                            Circle()
                                 .fill(recInfos[index].color)
-                                .frame(width: 50, height: 50)
+                                .frame(width: 16, height: 16)
                                 .background(
-                                    RoundedRectangle(cornerRadius: 10)
+                                    Circle()
                                         .stroke(.white, lineWidth: 5)
                                 )
-                                .scaleEffect(index == self.currentIndex ? 1.2 : 1)
+                                .scaleEffect(index == self.currentIndex ? 1.3 : 1)
                                 .onTapGesture {
                                     withAnimation {
                                         self.currentIndex = index
@@ -111,6 +111,9 @@ struct Home: View {
                         }
                     }
                         .padding()
+                        .background(.black.opacity(0.5))
+                        .clipShape(Capsule())
+                        .padding(.leading, 10)
                     , alignment: .leading
                 )
             }
